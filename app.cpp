@@ -1,57 +1,77 @@
-#include "opencv2/core/utility.hpp"
-#include "opencv2/imgproc.hpp"
-#include "opencv2/imgcodecs.hpp"
-#include "opencv2/highgui.hpp"
+#include <opencv2/core/core.hpp>
+#include <opencv2/imgproc/imgproc.hpp>
+#include <opencv2/highgui/highgui.hpp>
+#include <iostream>
+// https://batchloaf.wordpress.com/2017/02/12/a-simple-way-to-read-and-write-audio-and-video-files-in-c-using-ffmpeg-part-2-video/
+//g++ -Wl,-Bstatic -static-libgcc -std=c++11 /usr/stream/app.cpp -o /usr/stream/app $(pkg-config --cflags --libs -static opencv) -lgfortran -lquadmath
+
+// int main( int argc, char** argv )
+// {
+//     if( argc != 2)
+//     {
+//      std::cout <<" Usage: display_image ImageToLoadAndDisplay" << std::endl;
+//      return -1;
+//     }
+//
+//     cv::Mat image, gray_image;
+//     image = cv::imread(argv[1], cv::IMREAD_COLOR); // Read the file
+//
+//
+//     if(! image.data ) // Check for invalid input
+//     {
+//         std::cout << "Could not open or find the image" << std::endl ;
+//         return -1;
+//     }
+//
+//     cv::cvtColor( image, gray_image, CV_BGR2GRAY );
+//     cv::imwrite( "./Gray_Image.jpg", gray_image );
+//
+//     return 0;
+// }
 #include <stdio.h>
-using namespace cv;
-using namespace std;
-int edgeThresh = 1;
-Mat image, gray, edge, cedge;
-// define a trackbar callback
-static void onTrackbar(int, void*)
+
+// Video resolution
+#define W 1024
+#define H 576
+
+
+unsigned char frame[H][W][3] = {0};
+
+int main()
 {
-    blur(gray, edge, Size(3,3));
-    // Run the edge detector on grayscale
-    Canny(edge, edge, edgeThresh, edgeThresh*3, 3);
-    cedge = Scalar::all(0);
-    image.copyTo(cedge, edge);
-    imshow("Edge map", cedge);
-}
-static void help()
-{
-    printf("\nThis sample demonstrates Canny edge detection\n"
-           "Call:\n"
-           "    /.edge [image_name -- Default is ../data/fruits.jpg]\n\n");
-}
-const char* keys =
-{
-    "{help h||}{@image |../data/fruits.jpg|input image name}"
-};
-int main( int argc, const char** argv )
-{
-    CommandLineParser parser(argc, argv, keys);
-    if (parser.has("help"))
+    int x, y, count;
+
+    FILE *pipein = popen("ffmpeg -loglevel warning -i /usr/stream/cut.avi -f image2pipe -vcodec rawvideo -pix_fmt rgb24 -", "r");
+    FILE *pipeout = popen("ffmpeg -loglevel warning -y -f rawvideo -vcodec rawvideo -pix_fmt rgb24 -s 1024x576 -r 25 -i - -f mp4 -q:v 5 -an -vcodec mpeg4 /usr/stream/output.mp4", "w");
+    static char bitmap[W*H*3];
+    // Process video frames
+    while(1)
     {
-        help();
-        return 0;
+
+        cv::Mat gray_image, image;
+        count = fread( frame, 1, H*W*3, pipein );
+
+        if ( count != H*W*3 ) break;
+
+
+        memcpy(bitmap, frame, W*H*3);
+        cv::Mat mat( H, W, CV_8UC3, bitmap );
+
+        // std::cout << bits << std::endl;
+
+        // image = Mat(H, W, cv::CV_8UC3, count);
+
+        cv::cvtColor( mat, gray_image, CV_BGR2HSV );
+
+        unsigned char *processed_raw_frame = (unsigned char*)(gray_image.data);
+
+        fwrite(processed_raw_frame, 1, H*W*3, pipeout);
     }
-    string filename = parser.get<string>(0);
-    image = imread(filename, 1);
-    if(image.empty())
-    {
-        printf("Cannot read image file: %s\n", filename.c_str());
-        help();
-        return -1;
-    }
-    cedge.create(image.size(), image.type());
-    cvtColor(image, gray, COLOR_BGR2GRAY);
-    // Create a window
-    namedWindow("Edge map", 1);
-    // create a toolbar
-    createTrackbar("Canny threshold", "Edge map", &edgeThresh, 100, onTrackbar);
-    // Show the image
-    onTrackbar(0, 0);
-    // Wait for a key stroke; the same function arranges events processing
-    waitKey(0);
+
+    fflush(pipein);
+    pclose(pipein);
+    fflush(pipeout);
+    pclose(pipeout);
+
     return 0;
 }

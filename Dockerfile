@@ -1,4 +1,27 @@
-FROM alpine:3.8 as compiler
+FROM alpine:3.8 as build
+
+ENV FFMPEG_VERSION=3.4.4
+
+WORKDIR /tmp/ffmpeg
+
+RUN apk add --update coreutils build-base curl nasm tar bzip2 \
+  zlib-dev openssl-dev yasm-dev lame-dev libogg-dev x264-dev libvpx-dev libvorbis-dev x265-dev freetype-dev libass-dev libwebp-dev rtmpdump-dev libtheora-dev opus-dev && \
+
+  DIR=$(mktemp -d) && cd ${DIR} && \
+
+  curl -s http://ffmpeg.org/releases/ffmpeg-${FFMPEG_VERSION}.tar.gz | tar zxvf - -C . && \
+  cd ffmpeg-${FFMPEG_VERSION} && \
+  ./configure \
+  --enable-version3 --enable-gpl --enable-nonfree --enable-small --enable-libmp3lame --enable-libx264 --enable-libx265 --enable-libvpx --enable-libtheora --enable-libvorbis --enable-libopus --enable-libass --enable-libwebp --enable-librtmp --enable-postproc --enable-avresample --enable-libfreetype --enable-openssl --disable-debug && \
+  make && \
+  make install && \
+  make distclean && \
+
+  rm -rf ${DIR} && \
+  apk del build-base curl tar bzip2 x264 openssl nasm && rm -rf /var/cache/apk/*
+
+
+WORKDIR /
 
 RUN echo -e '@edgunity http://nl.alpinelinux.org/alpine/edge/community \
     @edge http://nl.alpinelinux.org/alpine/edge/main \
@@ -7,6 +30,7 @@ RUN echo -e '@edgunity http://nl.alpinelinux.org/alpine/edge/community \
     >> /etc/apk/repositories
 
 RUN apk add --update --no-cache \
+      bash \
       build-base \
       openblas-dev \
       unzip \
@@ -66,6 +90,7 @@ RUN wget --progress=dot:giga https://storage.googleapis.com/downloads.webmprojec
     tar -xzf libwebp-1.0.0-linux-x86-64.tar.gz && \
     mv /libwebp-1.0.0-linux-x86-64/lib/libwebp.a /usr/lib && \
     rm -rf /libwebp*
+WORKDIR /
 
 RUN wget --progress=dot:giga http://www.ece.uvic.ca/~frodo/jasper/software/jasper-2.0.10.tar.gz && \
     tar -xzf jasper-2.0.10.tar.gz && \
@@ -83,13 +108,5 @@ RUN wget --progress=dot:giga http://www.ece.uvic.ca/~frodo/jasper/software/jaspe
 
 ENV PKG_CONFIG_PATH=/usr/local/lib64/pkgconfig:/usr/lib/pkgconfig
 
-COPY app.cpp app.cpp
 
-RUN g++ -Wl,-Bstatic -static-libgcc -std=c++11 \
-    app.cpp \
-    -o /app \
-    $(pkg-config --cflags --libs -static opencv) \
-    -lgfortran -lquadmath
-
-FROM alpine
-COPY --from=compiler /app /bin/app
+ # g++ -Wl,-Bstatic -static-libgcc -std=c++11 /usr/app.cpp -o /usr/app.o $(pkg-config --cflags --libs -static opencv) -lgfortran -lquadmath
