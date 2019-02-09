@@ -71,6 +71,7 @@ RUN mkdir -p /opt/opencv-${OPENCV_VERSION}/build && \
     -D FORCE_VTK=OFF \
     -D WITH_FFMPEG=OFF \
     -D WITH_GDAL=OFF \
+    -D WITH_CUDA=ON \
     -D WITH_IPP=OFF \
     -D WITH_OPENEXR=OFF \
     -D WITH_OPENGL=OFF \
@@ -78,8 +79,8 @@ RUN mkdir -p /opt/opencv-${OPENCV_VERSION}/build && \
     -D WITH_TBB=OFF \
     -D WITH_XINE=OFF \
     -D BUILD_JPEG=ON  \
-    -D BUILD_TIFF=ON \
-    -D BUILD_PNG=ON \
+    -D BUILD_TIFF=OFF \
+    -D BUILD_PNG=OFF \
   .. && \
   make -j$(nproc) && \
   make install && \
