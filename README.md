@@ -4,7 +4,7 @@
 
 3. nvidia-smi
 
-[[https://github.com/luddite478/cpp-cuda-opencv-ffmpeg-tests/blob/master/nvidia-smi.png]]
+[[https://github.com/luddite478/cpp-cuda-opencv-ffmpeg-tests/blob/master/nvidia-smi.png|alt=nvidia-smi]]
 
 3. docker run --runtime=nvidia -ti -v /<host_folder>:/<container_folder> cuda-container sh
 
