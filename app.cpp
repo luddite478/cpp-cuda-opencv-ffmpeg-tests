@@ -52,8 +52,8 @@ int main(int argc, char *argv[])
     std::string width = argv[2];
     std::string height = argv[3];
     std::string framerate = argv[4]; //25
-    static std::string output_filename = "output.mp4";
-    static std::string h264_preset = "slow";
+    const std::string output_filename = "output.mp4";
+    const std::string h264_preset = "slow";
 
     std::string ffmpeg_pipe_in_cmd = "ffmpeg -loglevel warning -vsync 0 -c:v h264_cuvid" +
     " -i " + filename + " -f image2pipe -vcodec rawvideo -pix_fmt rgb24 -";
