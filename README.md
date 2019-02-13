@@ -1,5 +1,4 @@
-1.google-cloud -> marketplace
-NVIDIA GPU Cloud Image for Deep Learning and HPC
+1.google-cloud -> marketplace NVIDIA GPU Cloud Image for Deep Learning and HPC
 
 2. docker build -t cuda-container Dockerfile
 
