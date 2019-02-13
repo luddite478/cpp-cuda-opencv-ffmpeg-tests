@@ -1,4 +1,4 @@
-// g++ -o cudatest cudatest.cpp `pkg-config opencv --cflags --libs`
+// g++ -o app app.cpp `pkg-config opencv --cflags --libs`
 #include <iostream>
 #include "opencv2/opencv.hpp"
 #include "opencv2/core.hpp"

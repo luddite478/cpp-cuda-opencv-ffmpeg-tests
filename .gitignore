@@ -1,3 +1,5 @@
 *.jpg
 *.o
 *.mp4
+*.avi
+Dockerfile
