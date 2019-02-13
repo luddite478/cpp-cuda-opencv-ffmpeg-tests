@@ -4,8 +4,8 @@
 #include <stdio.h>
 #include <iostream>
 
-#define W 1920
-#define H 1080
+#define W 1024
+#define H 576
 
 // void apply_blue_edgess(cv::Mat& matrix);
 // void apply_blue_edgess(cv::Mat& matrix, int mask_h, int mask_w);
@@ -50,7 +50,7 @@ int main()
     int x, y, count;
 
     FILE *pipein = popen("ffmpeg -loglevel warning -i /usr/stream/5sec.mp4 -f image2pipe -vcodec rawvideo -pix_fmt rgb24 -", "r");
-    FILE *pipeout = popen("ffmpeg -loglevel warning -y -f rawvideo -vcodec rawvideo -pix_fmt rgb24 -s 1920x1080 -r 30 -i - -f mp4 -q:v 1 -vcodec mpeg4 /usr/stream/output.mp4", "w");
+    FILE *pipeout = popen("ffmpeg -loglevel warning -y -f rawvideo -vcodec rawvideo -pix_fmt rgb24 -r 30 -i - -f mp4 -q:v 1 -vcodec mpeg4 /usr/stream/output.mp4", "w");
 
     static char bitmap[W*H*3];
     static unsigned char frame[H][W][3] = {0};
