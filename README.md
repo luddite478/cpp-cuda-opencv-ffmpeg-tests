@@ -1,7 +1,7 @@
 1.google-cloud -> marketplace
 NVIDIA GPU Cloud Image for Deep Learning and HPC
 
-*+-----------------------------------------------------------------------------+
+>+-----------------------------------------------------------------------------+
 | NVIDIA-SMI 410.79       Driver Version: 410.79       CUDA Version: 10.0     |
 |-------------------------------+----------------------+----------------------+
 | GPU  Name        Persistence-M| Bus-Id        Disp.A | Volatile Uncorr. ECC |
@@ -16,7 +16,7 @@ NVIDIA GPU Cloud Image for Deep Learning and HPC
 |  GPU       PID   Type   Process name                             Usage      |
 |=============================================================================|
 |  No running processes found                                                 |
-+-----------------------------------------------------------------------------+ *
++-----------------------------------------------------------------------------+ 
 
 2. docker build -t cuda-container Dockerfile
 
