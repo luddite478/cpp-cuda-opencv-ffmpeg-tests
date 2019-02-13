@@ -3,6 +3,7 @@
 #include <opencv2/highgui/highgui.hpp>
 #include <stdio.h>
 #include <iostream>
+#include <string>
 
 #define W 1024
 #define H 576
@@ -45,18 +46,35 @@ void apply_blue_edgess(cv::Mat& matrix, cv::Mat& mask, cv::Mat& inverted_mask) {
 
 }
 
-int main()
+int main(int argc, char *argv[])
 {
-    int x, y, count;
+    std::string input_filename = argv[1]; //cut.mp4
+    std::string width = argv[2];
+    std::string height = argv[3];
+    std::string framerate = argv[4]; //25
+    static std::string output_filename = "output.mp4";
+    static std::string h264_preset = "slow";
 
-    FILE *pipein = popen("ffmpeg -loglevel warning -i /usr/stream/5sec.mp4 -f image2pipe -vcodec rawvideo -pix_fmt rgb24 -", "r");
-    FILE *pipeout = popen("ffmpeg -loglevel warning -y -f rawvideo -vcodec rawvideo -pix_fmt rgb24 -r 30 -i - -f mp4 -q:v 1 -vcodec mpeg4 /usr/stream/output.mp4", "w");
+    std::string ffmpeg_pipe_in_cmd = "ffmpeg -loglevel warning -vsync 0 -c:v h264_cuvid" +
+    " -i " + filename + " -f image2pipe -vcodec rawvideo -pix_fmt rgb24 -";
+
+    std::string ffmpeg_pipe_out_cmd = "ffmpeg -loglevel warning -y -f rawvideo" +
+    " -s:v " + width + "x" + height +
+    " -r " + framerate +
+    " -pix_fmt rgb24" +
+    " -i - -c:v h264_nvenc" +
+    " -preset " + h264_preset +
+    " -cq 10 -bf 2 -g 150 " + output_filename;
+
+    FILE *pipein = popen(ffmpeg_pipe_in_cmd, "r");
+    FILE *pipeout = popen(ffmpeg_pipe_out_cmd, "w");
 
     static char bitmap[W*H*3];
     static unsigned char frame[H][W][3] = {0};
 
     cv::Mat mask;
     cv::Mat inverted_mask;
+    int count;
 
     while(1)
     {
