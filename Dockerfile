@@ -5,12 +5,24 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
         git \
         libgl1-mesa-glx \
         make \
+        libx264-dev \
+        libfdk-aac-dev \
+        libx265-dev \
+        libnuma-dev \
+        libmp3lame-dev \
+        libvpx-dev \
+        libopus-dev \
         nasm && \
     rm -rf /var/lib/apt/lists/*
 
 RUN git clone --depth 1 --branch n3.4.1 https://github.com/ffmpeg/ffmpeg ffmpeg && \
     cd ffmpeg && \
     ./configure --enable-cuda --enable-cuvid --enable-nvenc --enable-nonfree --enable-libnpp \
+                --enable-libfdk-aac \
+                --enable-libmp3lame \
+                --enable-libvpx \
+                --enable-libx264 \
+                --enable-libx265 \
                 --extra-cflags=-I/usr/local/cuda/include \
                 --extra-ldflags=-L/usr/local/cuda/lib64 \
                 --prefix=/usr/local/ffmpeg --enable-shared --disable-static \
