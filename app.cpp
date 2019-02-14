@@ -48,6 +48,9 @@ void apply_blue_edgess(cv::Mat& matrix, cv::Mat& mask, cv::Mat& inverted_mask) {
 
 int main(int argc, char *argv[])
 {
+
+    if(argc < 5) return 1;
+
     std::string input_filename = argv[1]; //cut.mp4
     std::string width = argv[2];
     std::string height = argv[3];
@@ -55,19 +58,23 @@ int main(int argc, char *argv[])
     const std::string output_filename = "output.mp4";
     const std::string h264_preset = "slow";
 
-    std::string ffmpeg_pipe_in_cmd = "ffmpeg -loglevel warning -vsync 0 -c:v h264_cuvid" +
-    " -i " + filename + " -f image2pipe -vcodec rawvideo -pix_fmt rgb24 -";
+    std::string ffmpeg_pipe_in_cmd, ffmpeg_pipe_out_cmd;
+    ffmpeg_pipe_in_cmd += std::string("ffmpeg -loglevel warning -vsync 0 -c:v h264_cuvid")
+                       +  std::string(" -i ") + std::string(input_filename)
+                       +  std::string(" -f image2pipe -vcodec rawvideo -pix_fmt rgb24 -");
 
-    std::string ffmpeg_pipe_out_cmd = "ffmpeg -loglevel warning -y -f rawvideo" +
-    " -s:v " + width + "x" + height +
-    " -r " + framerate +
-    " -pix_fmt rgb24" +
-    " -i - -c:v h264_nvenc" +
-    " -preset " + h264_preset +
-    " -cq 10 -bf 2 -g 150 " + output_filename;
+    ffmpeg_pipe_out_cmd += std::string("ffmpeg -loglevel warning -y -f rawvideo")
+                        +  std::string(" -s:v ") + std::string(width) + std::string("x") + std::string(height)
+                        +  std::string(" -r ") + std::string(framerate)
+                        +  std::string(" -pix_fmt ") + std::string("rgb24")
+                        +  std::string(" -i - -c:v h264_nvenc")
+                        +  std::string(" -preset ") + std::string(h264_preset)
+                        +  std::string(" -cq 10 -bf 2 -g 150 ")
+                        +  std::string(output_filename);
 
-    FILE *pipein = popen(ffmpeg_pipe_in_cmd, "r");
-    FILE *pipeout = popen(ffmpeg_pipe_out_cmd, "w");
+
+    FILE *pipein = popen(ffmpeg_pipe_in_cmd.c_str(), "r");
+    FILE *pipeout = popen(ffmpeg_pipe_out_cmd.c_str(), "w");
 
     static char bitmap[W*H*3];
     static unsigned char frame[H][W][3] = {0};
