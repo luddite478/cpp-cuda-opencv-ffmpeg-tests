@@ -86,12 +86,18 @@ int main(int argc, char *argv[])
     std::string input_filename = argv[1]; //cut.mp4
     std::string width = argv[2];
     std::string height = argv[3];
-    std::string framerate = argv[4]; //25
+    std::string framerate = argv[4];
+    std::string ff_decoder = argv[5];
+    std::string ff_encoder = argv[6];
+    std::string ff_loglvl = argv[7];
     const std::string output_filename = "output.mp4";
     const std::string h264_preset = "slow";
 
+
+
     std::string ffmpeg_pipe_in_cmd, ffmpeg_pipe_out_cmd;
-    ffmpeg_pipe_in_cmd += std::string("ffmpeg -loglevel warning -vsync 0 -c:v h264")
+    ffmpeg_pipe_in_cmd += std::string("ffmpeg -loglevel warning -vsync 0")
+                       +  std::string("-c:v") + std::string(ff_decoder)
                        +  std::string(" -i ") + std::string(input_filename)
                        +  std::string(" -f image2pipe -vcodec rawvideo -pix_fmt rgb24 -");
 
@@ -99,9 +105,10 @@ int main(int argc, char *argv[])
                         +  std::string(" -s:v ") + std::string(width) + std::string("x") + std::string(height)
                         +  std::string(" -r ") + std::string(framerate)
                         +  std::string(" -pix_fmt ") + std::string("rgb24")
-                        +  std::string(" -i - -c:v h264")
+                        +  std::string(" -i - ")
+                        +  std::string(" -c:v ") + std::string(ff_encoder)
                         +  std::string(" -preset ") + std::string(h264_preset)
-                        +  std::string(" -cq 10 -bf 2 -g 150 ")
+                        +  std::string(" -cq 10 -bf 2 -g 50 ")
                         +  std::string(output_filename);
 
     FILE *pipein = popen(ffmpeg_pipe_in_cmd.c_str(), "r");
