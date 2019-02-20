@@ -18,6 +18,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 RUN git clone --depth 1 --branch n3.4.1 https://github.com/ffmpeg/ffmpeg ffmpeg && \
     cd ffmpeg && \
     ./configure --enable-cuda --enable-cuvid --enable-nvenc --enable-nonfree --enable-libnpp \
+                --enable-gpl \
                 --enable-libfdk-aac \
                 --enable-libmp3lame \
                 --enable-libvpx \

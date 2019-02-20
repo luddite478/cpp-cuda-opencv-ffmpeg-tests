@@ -6,8 +6,6 @@
 #include <string>
 
 // #define BENCH
-#define W 1024
-#define H 576
 
 #ifdef BENCH
   #include <sys/time.h>
@@ -22,9 +20,9 @@
   }
 #endif
 
-void createMask(cv::Mat& matrix, cv::Mat& mask, cv::Mat& inverted_mask) {
-  int mask_h = H * 50/100;
-  int mask_w = W ;
+void createMask(cv::Mat& matrix, cv::Mat& mask, cv::Mat& inverted_mask, const int H, const int W) {
+  const int mask_h = H * 50/100;
+  const int mask_w = W ;
   cv::Mat mask_matrix_1d = cv::Mat::zeros(H, W, CV_8U);
 
   mask_matrix_1d(cv::Rect(0, H * 25/100, mask_w, mask_h)) = 255;
@@ -83,32 +81,34 @@ int main(int argc, char *argv[])
 
     if(argc < 5) return 1;
 
-    std::string input_filename = argv[1]; //cut.mp4
-    std::string width = argv[2];
-    std::string height = argv[3];
-    std::string framerate = argv[4]; //25
-    const std::string output_filename = "output.mp4";
+    const std::string input_filename = argv[1]; //cut.mp4
+    const std::string width = argv[2];
+    const std::string height = argv[3];
+    const std::string framerate = argv[4]; //25
+    const std::string output_filename = "video_tmp.mp4";
     const std::string h264_preset = "slow";
 
     std::string ffmpeg_pipe_in_cmd, ffmpeg_pipe_out_cmd;
-    ffmpeg_pipe_in_cmd += std::string("ffmpeg -loglevel warning -vsync 0 -c:v h264_cuvid")
+    ffmpeg_pipe_in_cmd += std::string("ffmpeg -loglevel quiet -vsync 0 -c:v h264_cuvid")
                        +  std::string(" -i ") + std::string(input_filename)
                        +  std::string(" -f image2pipe -vcodec rawvideo -pix_fmt rgb24 -");
 
-    ffmpeg_pipe_out_cmd += std::string("ffmpeg -loglevel warning -y -f rawvideo")
+    ffmpeg_pipe_out_cmd += std::string("ffmpeg -loglevel quiet -y -f rawvideo")
                         +  std::string(" -s:v ") + std::string(width) + std::string("x") + std::string(height)
                         +  std::string(" -r ") + std::string(framerate)
                         +  std::string(" -pix_fmt ") + std::string("rgb24")
                         +  std::string(" -i - -c:v h264_nvenc")
                         +  std::string(" -preset ") + std::string(h264_preset)
-                        +  std::string(" -cq 10 -bf 2 -g 150 ")
+                        +  std::string(" -cq 10 -bf 2 -g 50 ")
                         +  std::string(output_filename);
 
     FILE *pipein = popen(ffmpeg_pipe_in_cmd.c_str(), "r");
     FILE *pipeout = popen(ffmpeg_pipe_out_cmd.c_str(), "w");
 
-    static char bitmap[W*H*3];
-    static unsigned char frame[H][W][3] = {0};
+    const int W = std::stoi(width);
+    const int H = std::stoi(height);
+    char bitmap[W*H*3];
+    unsigned char frame[H][W][3] = {0};
 
     cv::Mat mask;
     cv::Mat inverted_mask;
