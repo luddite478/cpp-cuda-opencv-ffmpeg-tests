@@ -5,7 +5,7 @@
 #include <iostream>
 #include <string>
 
-// #define BENCH
+#define BENCH
 
 #ifdef BENCH
   #include <sys/time.h>
@@ -93,15 +93,15 @@ int main(int argc, char *argv[])
 
 
     std::string ffmpeg_pipe_in_cmd, ffmpeg_pipe_out_cmd;
-    ffmpeg_pipe_in_cmd += std::string("ffmpeg -loglevel warning -vsync 0")
-                       +  std::string("-c:v") + std::string(ff_decoder)
+    ffmpeg_pipe_in_cmd += std::string("ffmpeg -loglevel ") +  std::string(ff_loglvl)
+                       +  std::string(" -c:v ") + std::string(ff_decoder)
                        +  std::string(" -i ") + std::string(input_filename)
                        +  std::string(" -f image2pipe -vcodec rawvideo -pix_fmt rgb24 -");
 
     ffmpeg_pipe_out_cmd += std::string("ffmpeg -loglevel quiet -y -f rawvideo")
                         +  std::string(" -s:v ") + std::string(width) + std::string("x") + std::string(height)
                         +  std::string(" -r ") + std::string(framerate)
-                        +  std::string(" -pix_fmt ") + std::string("yuv420p")
+                        +  std::string(" -pix_fmt ") + std::string("rgb24")
                         +  std::string(" -i - ")
                         +  std::string(" -c:v ") + std::string(ff_encoder)
                         +  std::string(" -preset ") + std::string(h264_preset)
