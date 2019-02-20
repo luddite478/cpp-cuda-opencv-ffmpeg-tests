@@ -90,9 +90,8 @@ int main(int argc, char *argv[])
     std::string ff_decoder = argv[5];
     std::string ff_encoder = argv[6];
     std::string ff_loglvl = argv[7];
-    const std::string output_filename = "output.mp4";
+    const std::string output_filename = "video_tmp.mp4";
     const std::string h264_preset = "slow";
-
 
 
     std::string ffmpeg_pipe_in_cmd, ffmpeg_pipe_out_cmd;
@@ -104,18 +103,19 @@ int main(int argc, char *argv[])
     ffmpeg_pipe_out_cmd += std::string("ffmpeg -loglevel warning -y -f rawvideo")
                         +  std::string(" -s:v ") + std::string(width) + std::string("x") + std::string(height)
                         +  std::string(" -r ") + std::string(framerate)
-                        +  std::string(" -pix_fmt ") + std::string("rgb24")
+                        +  std::string(" -pix_fmt ") + std::string("yuv420p")
                         +  std::string(" -i - ")
                         +  std::string(" -c:v ") + std::string(ff_encoder)
                         +  std::string(" -preset ") + std::string(h264_preset)
+                        +  std::string(" -avoid_negative_ts make_zero -fflags +genpts ")
                         +  std::string(" -cq 10 -bf 2 -g 50 ")
                         +  std::string(output_filename);
 
     FILE *pipein = popen(ffmpeg_pipe_in_cmd.c_str(), "r");
     FILE *pipeout = popen(ffmpeg_pipe_out_cmd.c_str(), "w");
 
-    static char bitmap[W*H*3];
-    static unsigned char frame[H][W][3] = {0};
+    char bitmap[W*H*3];
+    unsigned char frame[H][W][3] = {0};
 
     cv::Mat mask;
     cv::Mat inverted_mask;
