@@ -5,9 +5,7 @@
 #include <iostream>
 #include <string>
 
-#define BENCH
-#define W 1024
-#define H 576
+// #define BENCH
 
 #ifdef BENCH
   #include <sys/time.h>
@@ -22,9 +20,9 @@
   }
 #endif
 
-void createMask(cv::Mat& matrix, cv::Mat& mask, cv::Mat& inverted_mask) {
-  int mask_h = H * 50/100;
-  int mask_w = W ;
+void createMask(cv::Mat& matrix, cv::Mat& mask, cv::Mat& inverted_mask, const int H, const int W) {
+  const int mask_h = H * 50/100;
+  const int mask_w = W ;
   cv::Mat mask_matrix_1d = cv::Mat::zeros(H, W, CV_8U);
 
   mask_matrix_1d(cv::Rect(0, H * 25/100, mask_w, mask_h)) = 255;
@@ -100,7 +98,7 @@ int main(int argc, char *argv[])
                        +  std::string(" -i ") + std::string(input_filename)
                        +  std::string(" -f image2pipe -vcodec rawvideo -pix_fmt rgb24 -");
 
-    ffmpeg_pipe_out_cmd += std::string("ffmpeg -loglevel warning -y -f rawvideo")
+    ffmpeg_pipe_out_cmd += std::string("ffmpeg -loglevel quiet -y -f rawvideo")
                         +  std::string(" -s:v ") + std::string(width) + std::string("x") + std::string(height)
                         +  std::string(" -r ") + std::string(framerate)
                         +  std::string(" -pix_fmt ") + std::string("yuv420p")
@@ -114,6 +112,8 @@ int main(int argc, char *argv[])
     FILE *pipein = popen(ffmpeg_pipe_in_cmd.c_str(), "r");
     FILE *pipeout = popen(ffmpeg_pipe_out_cmd.c_str(), "w");
 
+    const int W = std::stoi(width);
+    const int H = std::stoi(height);
     char bitmap[W*H*3];
     unsigned char frame[H][W][3] = {0};
 
