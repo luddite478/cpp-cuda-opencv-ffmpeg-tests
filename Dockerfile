@@ -62,6 +62,7 @@ RUN apt-get clean && apt-get update && apt-get install -y \
         python3-dev \
         python3-numpy \
         gfortran \
+        libfdk-aac-dev \
         libatlas-base-dev \
         libatlas-dev \
         libatlas3-base \
