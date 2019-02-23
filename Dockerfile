@@ -123,3 +123,9 @@ RUN mkdir -p /tmp && \
     cd /tmp && \
     rm -rf opencv-3.4.0 opencv.zip && \
     cd /
+
+
+# FROM opencv-ffmpeg-cuda
+#
+# COPY /ugly_restreamer_CV/ /usr/stream/
+# CMD ["bash", "-c", "cd /usr/stream && ./start.sh GPU 2>&1"]
