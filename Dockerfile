@@ -127,7 +127,5 @@ RUN mkdir -p /tmp && \
     cd /
 
 
-# FROM opencv-ffmpeg-cuda
-#
-# COPY /ugly_restreamer_CV/ /usr/stream/
-# CMD ["bash", "-c", "cd /usr/stream && ./start.sh GPU 2>&1"]
+ENV NVIDIA_VISIBLE_DEVICES all
+ENV NVIDIA_DRIVER_CAPABILITIES video,compute,utility
