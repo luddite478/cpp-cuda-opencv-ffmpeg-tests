@@ -4,9 +4,11 @@
 #include <stdio.h>
 #include <iostream>
 #include <string>
-#include "blue_edges.cpp"
+#include "blue_edges.h"
+
 #define BENCH
 
+//>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
 #ifdef BENCH
   #include <sys/time.h>
   typedef unsigned long long timestamp_t;
@@ -19,6 +21,8 @@
     return  now.tv_usec + (timestamp_t)now.tv_sec * 1000000;
   }
 #endif
+//<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+
 
 void createMask(cv::Mat& matrix, cv::Mat& mask, cv::Mat& inverted_mask, const int H, const int W) {
   const int mask_h = H * 50/100;
