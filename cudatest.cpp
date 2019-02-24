@@ -15,6 +15,7 @@ int main (int argc, char* argv[])
         cv::cuda::GpuMat dst, src;
         src.upload(src_host);
         cv::cuda::threshold(src, dst, 128.0, 255.0, cv::THRESH_BINARY);
+        // cv::cuda::cvtColor(src, dst, CV_GRAY2BGR);
         cv::Mat result_host(dst);
         cv::imwrite( "./Gray_Image.jpg", result_host );
 
