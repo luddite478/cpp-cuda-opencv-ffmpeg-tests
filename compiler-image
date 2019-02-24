@@ -1,0 +1,6 @@
+FROM cuda-ff-cv
+
+COPY entrypoint.sh /
+
+ENTRYPOINT ["/entrypoint.sh"]
+

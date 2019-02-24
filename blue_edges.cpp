@@ -1,8 +1,8 @@
-// g++ -o app app.cpp `pkg-config opencv --cflags --libs`
+//g++ -std=c++11 -o app app.cpp blue_edges.cpp blue_edges.h `pkg-config opencv --cflags --libs`
+
 #include <iostream>
 #include "opencv2/opencv.hpp"
 #include "opencv2/core.hpp"
-#include "opencv2/highgui.hpp"
 #include "opencv2/cudaarithm.hpp"
 #include "blue_edges.h"
 
@@ -12,19 +12,23 @@ void blue_edges(cv::Mat& matrix, cv::Mat& mask, cv::Mat& inverted_mask)
 {
     try
     {
-        cv::cuda::GpuMat dst, src;
-        src.upload(matrix);
-        cv::cuda::threshold(src, dst, 128.0, 255.0, cv::THRESH_BINARY);
+        cv::cuda::GpuMat gpu_output, gpu_matrix, gpu_mask, gpu_inverted_mask, internal_mask_matrix, external_mask_matrix;
+        gpu_matrix.upload(matrix);
+        gpu_mask.upload(mask);
+        gpu_inverted_mask.upload(inverted_mask);
+        cv::cuda::bitwise_and(gpu_matrix, gpu_mask, internal_mask_matrix);
+        cv::cuda::bitwise_and(gpu_matrix, gpu_inverted_mask, external_mask_matrix);
+        cv::cuda::threshold(gpu_matrix, gpu_matrix, 128.0, 255.0, cv::THRESH_BINARY);
         // cv::cuda::cvtColor(src, dst, CV_GRAY2BGR);
-        cv::Mat matrix(dst);
+        cv::Mat matrix(gpu_output);
 
     }
     catch(const cv::Exception& ex)
     {
         std::cout << "Error: " << ex.what() << std::endl;
     }
-    std::cout << "hello" << std::endl;
 }
+
 
 // struct blue_edges_filter {
 //   blue_edges_filter(int width, int height)

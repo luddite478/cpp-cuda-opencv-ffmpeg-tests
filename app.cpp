@@ -94,7 +94,7 @@ int main(int argc, char *argv[])
     cv::Mat inverted_mask;
     int count;
 
-    blue_edges_filter apply_blue_edgess(std::stoi(width), std::stoi(height));
+//    blue_edges_filter apply_blue_edgess(std::stoi(width), std::stoi(height));
 
     while(1)
     {
