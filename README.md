@@ -2,7 +2,7 @@
 
 2. ```docker login nvcr.io``` -> username $oauthtoken -> password <NGC API KEY>
 
-3. ``` docker build -t processing-module -f \`pwd\`/Dockerfile \`pwd\` ```
+3. ``` docker build -t processing-module -f `pwd`/Dockerfile `pwd` ```
 
 4. nvidia-smi
 
