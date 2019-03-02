@@ -2,12 +2,22 @@
 
 2. docker login nvcr.io -> username $oauthtoken -> password <NGC API KEY>
 
-3. docker build -t cuda-container-2 -f \`pwd\`/Dockerfile \`pwd\`
+3. docker build -t processing-module -f \`pwd\`/Dockerfile \`pwd\`
 
 4. nvidia-smi
 
 ![alt text](https://github.com/luddite478/cpp-cuda-opencv-ffmpeg-tests/blob/master/nvidia-smi.png)
 
-5. docker run --runtime=nvidia -ti -v /<host_folder>:/<container_folder> cuda-container sh
+5. nano /etc/docker/daemon.json
+    {
+        "default-runtime": "nvidia", 
+        "runtimes": {
+            "nvidia": {
+                "path": "nvidia-container-runtime",
+                "runtimeArgs": []
+            }
+        }
+    }
 
-6. cd <container_folder> && g++ -o app app.cpp \`pkg-config opencv --cflags --libs\`
+6. Create compiling container:
+   cd docker-compiler-img docker build -t cv_ff_compiler .
