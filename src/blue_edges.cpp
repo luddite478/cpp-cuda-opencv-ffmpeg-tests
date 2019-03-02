@@ -3,7 +3,6 @@
 #include "opencv2/opencv.hpp"
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"
-#include "opencv2/cudaarithm.hpp"
 #include "blue_edges.h"
 
 using namespace cv;
@@ -12,10 +11,8 @@ void blue_edges(cv::Mat& matrix, cv::Mat& mask, cv::Mat& inverted_mask)
 {
     try
     {
-        cv::cuda::GpuMat dst, src;
-        src.upload(matrix);
-        cv::cuda::threshold(src, dst, 128.0, 255.0, cv::THRESH_BINARY);
-        // cv::cuda::cvtColor(src, dst, CV_GRAY2BGR);
+        cv::cvtColor(src, dst, CV_GRAY2BGR);
+        cv::cvtColor(src, dst, CV_GRAY2BGR);
         cv::Mat matrix(dst);
 
     }
