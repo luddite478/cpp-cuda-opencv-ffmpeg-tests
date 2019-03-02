@@ -1,8 +1,7 @@
-// g++ -o app app.cpp `pkg-config opencv --cflags --libs`
-#include <iostream>
+d r -ti -v ~/stream/cpp-cuda-opencv-ffmpeg-tests:/usr/stream processing-module sh#include <iostream>
 #include "opencv2/opencv.hpp"
 #include "opencv2/core.hpp"
-#include "opencv2/highgui.hpp"
+#include "opencv2/cudaarithm.hpp"
 #include "blue_edges.h"
 
 using namespace cv;
@@ -11,15 +10,20 @@ void blue_edges(cv::Mat& matrix, cv::Mat& mask, cv::Mat& inverted_mask)
 {
     try
     {
-        cv::cvtColor(matrix, matrix, CV_GRAY2BGR);
-        cv::cvtColor(matrix, matrix, CV_GRAY2BGR);
+        cv::cuda::GpuMat dst, src;
+        src.upload(matrix);
+
+        cv::bitwise_and(matrix, mask, internal_mask_matrix);
+        cv::bitwise_and(matrix, inverted_mask, external_mask_matrix);
+        cv::cuda::threshold(src, dst, 128.0, 255.0, cv::THRESH_BINARY);
+        // cv::cuda::cvtColor(src, dst, CV_GRAY2BGR);
+        cv::Mat matrix(dst);
 
     }
     catch(const cv::Exception& ex)
     {
         std::cout << "Error: " << ex.what() << std::endl;
     }
-    std::cout << "hello" << std::endl;
 }
 
 // struct blue_edges_filter {
