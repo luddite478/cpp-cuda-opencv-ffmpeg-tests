@@ -9,6 +9,7 @@
 ![alt text](https://github.com/luddite478/cpp-cuda-opencv-ffmpeg-tests/blob/master/nvidia-smi.png)
 
 5. nano /etc/docker/daemon.json
+```
     {
         "default-runtime": "nvidia", 
         "runtimes": {
@@ -18,6 +19,6 @@
             }
         }
     }
-
+```
 6. Create compiling container:
-   cd docker-compiler-img docker build -t cv_ff_compiler .
+  ``` cd docker-compiler-img docker build -t cv_ff_compiler .```
